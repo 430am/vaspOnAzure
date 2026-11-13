@@ -1,0 +1,31 @@
+    [[nodearray $NodeArrayA100]]
+    Extends = nodearraybase
+    MachineType = $A100MachineType
+    ImageName = $VaspGalleryImageId
+    Region = $VaspRegion
+    SubnetId = $VaspComputeSubnetId
+    UsePublicNetwork = false
+    InitialCount = 0
+    MaxCount = $VaspA100MaxCount
+        [[[configuration]]]
+        slurm.role = execute
+        slurm.hpc = true
+        slurm.partition = $SlurmPartitionA100
+        slurm.default_partition = false
+        [[[cluster-init vasp-image:default]]]
+
+    [[nodearray $NodeArrayH100]]
+    Extends = nodearraybase
+    MachineType = $H100MachineType
+    ImageName = $VaspGalleryImageId
+    Region = $VaspRegion
+    SubnetId = $VaspComputeSubnetId
+    UsePublicNetwork = false
+    InitialCount = 0
+    MaxCount = $VaspH100MaxCount
+        [[[configuration]]]
+        slurm.role = execute
+        slurm.hpc = true
+        slurm.partition = $SlurmPartitionH100
+        slurm.default_partition = false
+        [[[cluster-init vasp-image:default]]]

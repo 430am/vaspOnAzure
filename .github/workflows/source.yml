@@ -1,0 +1,55 @@
+name: Protected source staging or cleanup
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [stage, cleanup]
+        default: stage
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: vasp-protected-source
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: [self-hosted, azure-hpc, licensed-source]
+    environment: licensed-source
+    timeout-minutes: 60
+    env:
+      ACTION: ${{ inputs.action }}
+      PIPELINE: ${{ vars.PIPELINE_JSON_PATH }}
+      SOURCE: ${{ vars.VASP_SOURCE_DIRECTORY }}
+      MANIFEST: ${{ vars.VASP_APPROVED_MANIFEST_PATH }}
+      VASP_VERSION: ${{ vars.VASP_VERSION }}
+      ARCHIVE_NAME: ${{ vars.VASP_SOURCE_ARCHIVE_NAME || 'vasp-source.tar.gz' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          clean: false
+      - uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac
+        with:
+          client-id: ${{ vars.AZURE_SOURCE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Approved source operation; no artifact upload
+        run: |
+          set -euo pipefail
+          [[ $ACTION == stage || $ACTION == cleanup ]]
+          [[ $ARCHIVE_NAME =~ ^[A-Za-z0-9_-][A-Za-z0-9._-]+$ && $ARCHIVE_NAME != *..* ]]
+          if [[ $ACTION == stage ]]; then
+            work="$RUNNER_TEMP/vasp-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+            python3 scripts/source/prepare.py package --source "$SOURCE" --manifest "$MANIFEST" --version "$VASP_VERSION" --output "$work/$ARCHIVE_NAME"
+            python3 scripts/build/manage.py upload --pipeline "$PIPELINE" --archive "$work/$ARCHIVE_NAME" --approve
+          else
+            python3 scripts/build/manage.py source-cleanup --pipeline "$PIPELINE" --approve
+          fi
+      - name: Remove this job's local staging archive
+        if: always()
+        run: |
+          set -euo pipefail
+          [[ $ARCHIVE_NAME =~ ^[A-Za-z0-9_-][A-Za-z0-9._-]+$ && $ARCHIVE_NAME != *..* ]]
+          work="$RUNNER_TEMP/vasp-source-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          rm -f -- "$work/$ARCHIVE_NAME" "$work/$ARCHIVE_NAME.json"
+          if [[ -d $work ]]; then rmdir -- "$work"; fi

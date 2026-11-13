@@ -1,0 +1,43 @@
+name: A100 or H100 Slurm validation
+on:
+  workflow_dispatch:
+    inputs:
+      generation:
+        type: choice
+        options: [a100, h100]
+        default: a100
+      image_version_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: vasp-gpu-validation
+  cancel-in-progress: false
+jobs:
+  slurm:
+    runs-on: [self-hosted, azure-hpc, slurm-client]
+    environment: gpu-validation
+    timeout-minutes: 120
+    env:
+      GENERATION: ${{ inputs.generation }}
+      EXPECTED_IMAGE_VERSION_ID: ${{ inputs.image_version_id }}
+      A100_PARTITION: ${{ vars.SLURM_PARTITION_A100 }}
+      H100_PARTITION: ${{ vars.SLURM_PARTITION_H100 }}
+      A100_GPU_COUNT: ${{ vars.A100_GPU_COUNT }}
+      H100_GPU_COUNT: ${{ vars.H100_GPU_COUNT }}
+      VASP_SHARED_PATH: ${{ vars.VASP_SHARED_PATH }}
+      MPI_TCP_ALLOWED_CIDRS: ${{ vars.MPI_TCP_ALLOWED_CIDRS }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: |
+          set -euo pipefail
+          if [[ $GENERATION == a100 ]]; then
+            export EXPECTED_GPU_COUNT="$A100_GPU_COUNT"
+            partition=$A100_PARTITION
+          else
+            export EXPECTED_GPU_COUNT="$H100_GPU_COUNT"
+            partition=$H100_PARTITION
+          fi
+          bash scripts/validation/slurm-validate.sh "$partition" "$GENERATION"
+      # Licensed VASP calculations are submitted separately on the approved filesystem.

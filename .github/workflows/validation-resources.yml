@@ -1,0 +1,38 @@
+name: Standalone validation resources or cleanup
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [plan, apply, destroy]
+        default: plan
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: vasp-standalone-validation
+  cancel-in-progress: false
+jobs:
+  resources:
+    runs-on: [self-hosted, azure-hpc]
+    environment: gpu-validation
+    timeout-minutes: 90
+    env:
+      ACTION: ${{ inputs.action }}
+      VARFILE: ${{ vars.VALIDATION_TFVARS_PATH }}
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      ARM_USE_OIDC: 'true'
+      TF_APPROVED_APPLY: '1'
+      TF_BACKEND_ACCOUNT: ${{ vars.TF_BACKEND_ACCOUNT }}
+      TF_BACKEND_CONTAINER: ${{ vars.TF_BACKEND_CONTAINER }}
+      TF_BACKEND_RESOURCE_GROUP: ${{ vars.TF_BACKEND_RESOURCE_GROUP }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: azure/login@8216e11d8cd9b42fe925c852af8e76311ff067ac
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - run: bash scripts/build/terraform.sh validation "$ACTION" -var-file="$VARFILE"

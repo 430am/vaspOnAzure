@@ -1,0 +1,21 @@
+name: Generate CycleCloud integration package
+on:
+  workflow_dispatch:
+    inputs:
+      image_version_id:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: [self-hosted, azure-hpc]
+    environment: cyclecloud-integration
+    timeout-minutes: 10
+    env:
+      PIPELINE: ${{ vars.PIPELINE_JSON_PATH }}
+      VERSION_ID: ${{ inputs.image_version_id }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: python3 scripts/build/cyclecloud-package.py --pipeline "$PIPELINE" --image-version-id "$VERSION_ID"
+      # Package contains identifiers only; retain on the controlled runner for review.

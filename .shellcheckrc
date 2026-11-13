@@ -1,0 +1,2 @@
+# External module initialization and /opt scripts exist only on the built VM.
+disable=SC1091

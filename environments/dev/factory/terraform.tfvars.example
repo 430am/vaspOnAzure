@@ -1,0 +1,16 @@
+subscription_id                       = "00000000-0000-0000-0000-000000000000"
+resource_group_name                   = "rg-vasp-image-factory"
+location                              = "centralus"
+name                                  = "vasp-dev-001"
+vasp_source_storage_account_name      = "REPLACEgloballyunique"
+vasp_source_checksum                  = "REPLACEwithapproved64characterarchivechecksum"
+vasp_build_profiles                   = ["a100_gpu"]
+vasp_version                          = "6.4.3"
+# Existing private network is preferred. Runner needs routing and private DNS.
+# existing_build_subnet_id             = "/subscriptions/.../subnets/image-build"
+# existing_endpoint_subnet_id          = "/subscriptions/.../subnets/private-endpoints"
+# existing_private_dns_zone_id         = "/subscriptions/.../privateDnsZones/privatelink.blob.core.windows.net"
+# source_upload_principal_id           = "OBJECT-ID-of-approved-operator-or-OIDC-principal"
+# cyclecloud_integration_enabled       = true
+# cyclecloud_cluster_name              = "existing-cluster"
+# cyclecloud_compute_subnet_id         = "/subscriptions/.../subnets/compute"

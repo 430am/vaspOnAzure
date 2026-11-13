@@ -1,0 +1,31 @@
+name: Static checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_version: 1.9.8
+      - name: Local checks (no Azure credentials or source)
+        run: bash scripts/validation/local-check.sh
+      - uses: terraform-linters/setup-tflint@6e87008f9dd1fe3e34e66aca6c97b4a69f72a7f4
+        with:
+          tflint_version: v0.55.1
+      - run: tflint --init && tflint --recursive --config="$PWD/.tflint.hcl"
+      - name: Infrastructure security scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          scan-type: config
+          scan-ref: .
+          version: v0.76.2
+          skip-dirs: source,private,generated,.git
+          exit-code: '1'
+          severity: CRITICAL,HIGH
