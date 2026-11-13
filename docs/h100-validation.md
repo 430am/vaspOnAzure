@@ -17,6 +17,7 @@ az vm list-skus --location YOUR_REGION --resource-type virtualMachines \
   --size Standard_NC40ads_H100_v5 --all --output table
 export EXPECTED_IMAGE_VERSION_ID='/subscriptions/.../galleries/.../images/.../versions/1.1.0'
 export EXPECTED_GPU_COUNT=1
+export VASP_VERSION=6.4.3
 export VASP_SHARED_PATH=/YOUR_SHARED_POSIX_PATH
 export MPI_TCP_ALLOWED_CIDRS='YOUR_COMPUTE_SUBNET_CIDR'
 bash scripts/validation/slurm-validate.sh YOUR_H100_PARTITION h100
@@ -26,6 +27,9 @@ Expected: H100 capability 9.0, compatible driver/CUDA, correct GRES and pinned
 image, one-node health and two-node CUDA-buffer TCP communication.
 Follow the same registration, physical-vs-visible GPU count, private networking,
 scale-up/down and reimage criteria as [A100 validation](a100-validation.md).
+Set `VASP_VERSION` to the candidate's declared version. The same per-node image,
+all-GPU allocation/GRES, and workflow-version limitations documented in the
+A100 guide apply here; manually reviewed evidence is required until corrected.
 
 ## Licensed numerical tests
 

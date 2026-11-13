@@ -126,8 +126,13 @@ Export existing cluster parameters only to protected runner storage.
 
 Manual apply/destroy workflows use `TF_APPROVED_APPLY=1` only behind required
 environment approvals. Review plan dispatch output before approving apply.
-Image workflow polling is bounded to six hours; for longer builds use the local
-CLI procedure. A timeout does not cancel AIB automatically: inspect/cancel the
-specific template run before freeing staging resources or retrying.
+The image workflow job is bounded to six hours, while AIB allows eight hours
+and the CLI polls for up to nine hours. For approved longer builds use the local
+CLI procedure. A caller timeout does not cancel AIB automatically: inspect/
+cancel the specific template run before freeing staging resources or retrying.
+Local unsaved-plan apply/destroy commands need the command-scoped approval flag
+because the wrapper disables prompts; never export that flag globally.
+Factory and publication workflows do not refresh runner-local pipeline/result
+JSON themselves; export the approved outputs explicitly before dependent actions.
 Source workflow temporary archives are unique to run ID/attempt and removed on
 exit. They are never uploaded as GitHub artifacts.

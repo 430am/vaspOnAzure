@@ -18,6 +18,9 @@ Outputs default to a new `results-JOBID` directory. Existing output destinations
 are rejected. Inputs are never printed. Calculation stdout/stderr are private
 job outputs and **must not be CI artifacts**.
 Also supply `MPI_TCP_ALLOWED_CIDRS` for the approved compute network(s).
+Use absolute input/output/scratch paths. A relative output path currently fails
+when the driver changes into a different input directory before opening logs;
+see the [runtime path backlog item](../../docs/backlog.md#b01---resolve-runtime-paths-once).
 Use a dedicated calculation input directory rather than a general home/project
 directory: staging/copy-back preserves that directory's files.
 

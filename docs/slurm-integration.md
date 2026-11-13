@@ -28,20 +28,30 @@ an explicitly compatible PMIx/PMI stack through review. Do not force `--mpi=pmix
 or silently fall back to standalone `mpirun`.
 
 ```bash
-salloc -p YOUR_PARTITION -N 1 -n 2 --gres=gpu:1 --time=00:10:00
+export MPI_TCP_ALLOWED_CIDRS='YOUR_COMPUTE_SUBNET_CIDR'
+sbatch --wait --partition=YOUR_PARTITION --export=ALL <<'JOB'
+#!/bin/bash
+#SBATCH --job-name=mpi-single-node
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=2
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+#SBATCH --time=00:10:00
+#SBATCH --output=mpi-single-%j.log
+set -euo pipefail
 source /etc/profile.d/modules.sh
 module load mpi/openmpi-tcp
+ompi_info --parsable --all | grep -E 'mca:(ess:pmi|pmix:|btl:tcp)'
 source /opt/vasp-image/bin/runtime.sh
 mode=$(vasp_mpi_mode)
-export MPI_TCP_ALLOWED_CIDRS='YOUR_COMPUTE_SUBNET_CIDR'
 srun --mpi="$mode" --export=ALL /opt/vasp-image/bin/mpi-task.sh \
   /opt/vasp-image/bin/mpi-smoke
-exit
+JOB
 ```
 
-These module/runtime commands must execute on an allocated compute node if the
-login node lacks the image stack. Use `srun --mpi=none --pty bash` to obtain
-that shell without launching MPI during setup.
+The batch setup runs on an allocated compute node, so the login node need not
+have the image modules. This also avoids a resource-holding interactive step
+blocking a nested `srun`. Review `mpi-single-JOBID.log` and job accounting.
 Expected: two verified ranks within one node, correct library stack, nonzero
 exit if sums/message payloads fail.
 

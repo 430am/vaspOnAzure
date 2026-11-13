@@ -35,7 +35,8 @@ during preparation or Terraform plan.
 
 ```bash
 bash scripts/build/terraform.sh factory plan -var-file="$PWD/private/factory.tfvars"
-bash scripts/build/terraform.sh factory apply -var-file="$PWD/private/factory.tfvars"
+# After reviewing the plan and obtaining explicit apply approval:
+TF_APPROVED_APPLY=1 bash scripts/build/terraform.sh factory apply -var-file="$PWD/private/factory.tfvars"
 bash scripts/build/terraform.sh factory output > generated/pipeline.json
 python3 scripts/build/manage.py upload --pipeline generated/pipeline.json --approve
 ```
@@ -45,6 +46,12 @@ identity/RBAC and AIB template. Plan contains script code and non-secret build
 configuration, **never licensed source**. BYO resource security is not silently
 changed; the staging uploader rejects insecure storage. BYO gallery definitions
 must be Linux, generalized and Gen2; BYO gallery RBAC must remain private.
+
+The wrapper uses `-input=false`; an unsaved-plan apply requires the explicit
+command-scoped `TF_APPROVED_APPLY=1` flag. Do not export it globally. Freeze the
+reviewed checkout and inputs between plan and apply, which recomputes the plan.
+The factory workflow does not export pipeline JSON automatically; refresh the
+approved runner-local output after factory changes before source/build actions.
 
 ## Explicit build
 
@@ -61,6 +68,11 @@ cloud-init/waagent deprovisioning; managed image distribution.
 The source Marketplace `latest` is resolved **at AIB run time**. The IMDS
 image reference and package inventories are saved under `/opt/vasp-image/manifests`.
 Resolved version availability is an Azure-side check, not inferred locally.
+
+Timeouts currently differ: CLI polling allows nine hours, AIB allows eight,
+and the image workflow allows six. A caller timeout does not cancel AIB; inspect
+and cancel the specific template run before cleanup or retry. See the
+[timeout backlog item](backlog.md#b03---align-timeouts-and-service-cleanup).
 
 ## Publish a candidate (separate state)
 
@@ -85,7 +97,8 @@ replication_regions = ["centralus"]
 
 ```bash
 bash scripts/build/terraform.sh publication plan -var-file="$PWD/private/publication.tfvars"
-bash scripts/build/terraform.sh publication apply -var-file="$PWD/private/publication.tfvars"
+# After reviewing the plan and obtaining publication approval:
+TF_APPROVED_APPLY=1 bash scripts/build/terraform.sh publication apply -var-file="$PWD/private/publication.tfvars"
 bash scripts/build/terraform.sh publication output > generated/publication.json
 ```
 

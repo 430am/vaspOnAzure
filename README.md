@@ -40,6 +40,23 @@ your VASP release. See [build profiles](docs/vasp-build-profiles.md).
 
 ## Start here
 
+New to Azure, Slurm, or this repository? Follow the
+[beginner tutorial](docs/tutorial.md) with an authorized operator.
+It explains the concepts and walks through approval-gated staging, build,
+publication, integration, validation, promotion, and cleanup.
+
+### Documentation map
+
+| Need | Read |
+| --- | --- |
+| Learn the end-to-end workflow | [Tutorial](docs/tutorial.md) |
+| Understand ownership and design | [Architecture](docs/architecture.md), [security](docs/security.md) |
+| Find inputs, profiles, and launch contracts | [Factory variables](environments/dev/factory/variables.tf), [build profiles](docs/vasp-build-profiles.md), [Slurm integration](docs/slurm-integration.md), [job inputs](examples/slurm/README.md) |
+| See reviewed capabilities and limitations | [Repository review](docs/repository-review.md) |
+| Choose the next contribution | [Prioritized TODO backlog](docs/backlog.md) |
+
+### Operator procedures
+
 1. Review [architecture](docs/architecture.md) and [security](docs/security.md).
 2. Prepare licensed source using [local staging](docs/local-source-staging.md).
 3. Provision and build using [image build](docs/image-build.md).

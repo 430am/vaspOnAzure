@@ -26,11 +26,15 @@ Do not put licensed input within the Actions checkout cleanup boundary.
 
 ```bash
 bash scripts/build/terraform.sh validation plan -destroy -var-file="$PWD/private/validation.tfvars"
-bash scripts/build/terraform.sh validation destroy -var-file="$PWD/private/validation.tfvars"
+# After reviewing the exact destroy scope and obtaining approval:
+TF_APPROVED_APPLY=1 bash scripts/build/terraform.sh validation destroy -var-file="$PWD/private/validation.tfvars"
 ```
 
 Expected: only validation-state VM/NIC resources deleted; existing RG/subnet
 remain. Verify `terraform.sh validation output` reports empty arrays.
+Use the same validation backend key as deployment. The wrapper disables
+interactive confirmation; set the approval flag only for the reviewed destroy
+command, never globally.
 Remember disks and quota may remain after interrupted operations; inspect
 the exact resource IDs before any manual removal.
 

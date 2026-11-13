@@ -22,6 +22,7 @@ On an approved Slurm-client runner, with a shared POSIX path:
 ```bash
 export EXPECTED_IMAGE_VERSION_ID='/subscriptions/.../galleries/.../images/.../versions/1.0.0'
 export EXPECTED_GPU_COUNT=1
+export VASP_VERSION=6.4.3
 export VASP_SHARED_PATH=/YOUR_SHARED_ANF_PATH
 export MPI_TCP_ALLOWED_CIDRS='YOUR_COMPUTE_SUBNET_CIDR'
 bash scripts/validation/slurm-validate.sh YOUR_A100_PARTITION a100
@@ -35,6 +36,18 @@ zero job exits, actual private TCP connections and verified payloads.
 For larger SKUs distinguish **physical GPUs** from a task's cgroup visibility;
 request all GPUs when proving physical count, and compare node GRES to SKU
 metadata. Default production examples deliberately request only one GPU/node.
+
+Set `VASP_VERSION` to the candidate's declared version. The Slurm workflow
+currently does not export this value and its jobs default to `6.4.3`; use the
+explicit local procedure for other versions pending
+[version propagation](backlog.md#b06---select-the-candidate-version-consistently).
+The automated validator always requests one GPU, so larger-SKU physical-count
+acceptance requires a separately approved all-GPU allocation and GRES evidence.
+
+The expected gallery version is checked only in the initial allocation, not
+every node used by later health/MPI jobs. Collect/review each test node's IMDS
+version and CycleCloud membership. Printed node/GRES fields and readable/
+writable mount checks do not automatically prove all lifecycle criteria.
 
 ## Licensed calculations (never CI artifacts)
 
@@ -75,7 +88,8 @@ Supply existing RG/subnet, public SSH key, immutable image ID, `enabled=true`,
 
 ```bash
 bash scripts/build/terraform.sh validation plan -var-file="$PWD/private/validation.tfvars"
-bash scripts/build/terraform.sh validation apply -var-file="$PWD/private/validation.tfvars"
+# After reviewing the plan and approving temporary GPU deployment:
+TF_APPROVED_APPLY=1 bash scripts/build/terraform.sh validation apply -var-file="$PWD/private/validation.tfvars"
 bash scripts/build/terraform.sh validation output > generated/validation.json
 ```
 
