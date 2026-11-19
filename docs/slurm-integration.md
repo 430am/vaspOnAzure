@@ -2,6 +2,7 @@
 
 ## Preconditions
 
+Confirm the [software requirements for the submission host and compute nodes](software-dependencies.md#cyclecloud-and-slurm-validation).
 CycleCloud supplies compatible Slurm daemons/clients, controller discovery,
 munge, GRES, cgroups, mounts and autoscaler. This image installs PMI2 client
 libraries, not a second Slurm controller. Scheduler plugins are not baked in.

@@ -50,6 +50,7 @@ publication, integration, validation, promotion, and cleanup.
 | Need | Read |
 | --- | --- |
 | Learn the end-to-end workflow | [Tutorial](docs/tutorial.md) |
+| Install tools for local checks, Azure, Slurm, or CI | [Software dependencies](docs/software-dependencies.md) |
 | Understand ownership and design | [Architecture](docs/architecture.md), [security](docs/security.md) |
 | Find inputs, profiles, and launch contracts | [Factory variables](environments/dev/factory/variables.tf), [build profiles](docs/vasp-build-profiles.md), [Slurm integration](docs/slurm-integration.md), [job inputs](examples/slurm/README.md) |
 | See reviewed capabilities and limitations | [Repository review](docs/repository-review.md) |
@@ -69,9 +70,8 @@ publication, integration, validation, promotion, and cleanup.
 
 ## Local checks
 
-Requires Git, Terraform >=1.9, Python >=3.10, ShellCheck >=0.10 and outbound
-access to provider registries. CI additionally runs TFLint and Trivy.
-Local launch-driver tests also require `rsync`; the image installs it.
+Install and verify the [local check dependencies](docs/software-dependencies.md#local-checks)
+first, including ShellCheck and `rsync`. No Azure login is needed.
 
 ```bash
 bash scripts/validation/local-check.sh

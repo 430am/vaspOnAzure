@@ -5,8 +5,10 @@
 Existing supported CycleCloud 8.x and `cyclecloud-slurm` template/project with
 `nodearraybase`; private compute subnet; existing controller and shared POSIX
 mounts; gallery read/VM deployment rights for CycleCloud's deployment identity.
-CLI authentication is interactive or configured by the site's approved secret
-store. Terraform never stores CycleCloud passwords/tokens. Verify the exact
+Install the [site-compatible CycleCloud CLI](software-dependencies.md#operator-workstation)
+before export, upload, or import. CLI authentication is interactive or
+configured by the site's approved secret store. Terraform never stores
+CycleCloud passwords/tokens. Verify the exact
 CycleCloud/Slurm project version; generated fragments follow the upstream
 `nodearraybase`, `slurm.role`, `slurm.hpc`, `slurm.partition` conventions.
 The installed version's parser/import is the final schema authority.

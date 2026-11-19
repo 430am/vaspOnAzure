@@ -2,8 +2,10 @@
 
 ## Preconditions
 
-Authorized VASP 6 source; Python >=3.10; an independently reviewed manifest or
-expected deterministic archive checksum. The operator has Blob Data Contributor
+Authorized VASP 6 source; Python 3.10+ for packaging and Azure CLI for upload
+and deletion (see [operator tools](software-dependencies.md#operator-workstation));
+an independently reviewed manifest or expected deterministic archive checksum.
+The operator has Blob Data Contributor
 on the staging container and management-plane read access to its account.
 The runner has routing/private DNS to the Blob private endpoint.
 Do not use storage keys, SAS, GitHub-hosted source runners, or source artifacts.

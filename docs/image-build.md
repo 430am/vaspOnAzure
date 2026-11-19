@@ -2,7 +2,9 @@
 
 ## Preconditions and permissions
 
-Terraform >=1.9, Azure CLI, approved source checksum; registered
+Install the [operator tools](software-dependencies.md#operator-workstation) and
+review the [build VM dependencies](software-dependencies.md#image-builder-and-candidate-image).
+You also need an approved source checksum; registered
 `Microsoft.VirtualMachineImages`, `Microsoft.Compute`, `Microsoft.Storage`,
 `Microsoft.Network`, `Microsoft.ManagedIdentity` providers; supported AIB region.
 Operator/OIDC principal needs factory resource deployment, role definitions/

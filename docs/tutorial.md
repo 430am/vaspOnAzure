@@ -44,10 +44,13 @@ it is a separate administrative action. See [architecture](architecture.md).
 
 ## 2. Prepare your workspace without touching licensed source
 
-**Preconditions:** a checkout of this repository on Linux; Git, Python >=3.10,
-Terraform >=1.9 and <2.0, ShellCheck >=0.10, and `rsync`. Provider registry
-access is required for Terraform initialization.
-**Permissions:** ordinary local filesystem access; no Azure login is needed.
+**Preconditions:** a Linux checkout and the
+[local check tools](software-dependencies.md#local-checks): Bash, Git,
+Python 3.10+, Terraform 1.9 or newer (less than 2.0), ShellCheck 0.10+,
+and `rsync`. Follow the linked Ubuntu install and version checks first, and
+confirm Terraform can reach its provider registry or approved mirror.
+**Permissions:** installing tools may require an administrator; running the
+checks needs ordinary local filesystem access and no Azure login.
 Run from the repository root:
 
 ```bash
@@ -162,7 +165,8 @@ retention policy.
 
 ## 5. Provision the factory, then upload
 
-**Preconditions:** approved source checksum; registered Azure providers and
+**Preconditions:** [Azure CLI](software-dependencies.md#operator-workstation)
+on the operator host; approved source checksum; registered Azure providers and
 supported AIB region; an existing private Terraform backend separate from
 licensed-source storage. Confirm private endpoint routing/DNS and package
 repository egress with the Azure administrator.
@@ -322,7 +326,8 @@ validation/retention review, not a routine factory destroy.
 
 ## 8. Generate and approve CycleCloud integration
 
-**Preconditions:** replicated candidate; matching factory CycleCloud settings;
+**Preconditions:** site-compatible [CycleCloud CLI](software-dependencies.md#operator-workstation);
+replicated candidate; matching factory CycleCloud settings;
 an existing compatible cluster/project and shared POSIX mounts.
 **Permissions:** generation needs local output access only; export/upload/import
 needs the authorized CycleCloud administrator.
@@ -368,9 +373,10 @@ the image.
 
 ## 9. Validate Slurm, GPUs, and private TCP
 
-**Preconditions:** approved integration and GPU spend; a Slurm client connected
-to the existing cluster; private DNS, approved compute-network TCP rules, and
-a shared POSIX path. No licensed calculation input is needed for diagnostics.
+**Preconditions:** approved integration and GPU spend; a
+[Slurm client and GPU nodes with the required software](software-dependencies.md#cyclecloud-and-slurm-validation);
+private DNS, approved compute-network TCP rules, and a shared POSIX path.
+No licensed calculation input is needed for diagnostics.
 **Permissions:** GPU partition submission rights; network-rule changes, if
 needed, require the existing network owner's separate approval.
 
